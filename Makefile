@@ -11,6 +11,7 @@ buildlinux:
 	@echo $$($(version))
 	$(info +Компиляция Linux)
 	go build -ldflags "-s -w -X 'main.versionProg=$$($(version))'" -o ./bin/main/$(PROJECTNAME) cmd/main/main.go
+
 buildzip:
 	$(info +Компиляция с сжатием)
 	go build -ldflags "-s -w" -o ./bin/main/$(PROJECTNAME) cmd/main/main.go
@@ -28,12 +29,14 @@ buildandroid:
 
 run: buildlinux buildwin 
 	$(info +Запуск)
-	./bin/main/$(PROJECTNAME)
+	./bin/main/$(PROJECTNAME) --name "Привет из комндной строки" 
 
-build: buildlinux buildwin #buildwasm buildandroid
-	$(info +Сборка)
+
+build: buildlinux buildwin run #buildwasm buildandroid
+	$(info +Завершен makefile)
 
 #www: build
 #	$(info +Старт сервера http://172.16.172.10:8080)
 #	goexec 'http.ListenAndServe(":8080", http.FileServer(http.Dir("wasm")))'
 
+#CERTBOT_DOMAIN=foo; CERTBOT_VALIDATION=1345;
