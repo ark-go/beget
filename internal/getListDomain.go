@@ -59,8 +59,6 @@ func GetListDomain(setupDns *iface.SetupDns) *ListDomain {
 
 func getListDmn(s *iface.SetupDns, cmd iface.Command) *iface.ResultApi {
 	query := &commandApi{
-		// Login:         s.UserLoginDns,
-		// Passwd:        s.UserPasswdDns,
 		Input_format:  "json",
 		Output_format: "json",
 	}
@@ -92,13 +90,13 @@ func getListDmn(s *iface.SetupDns, cmd iface.Command) *iface.ResultApi {
 		log.Println("ошибка Unmarshal")
 	}
 	if res.Status == "error" {
-		log.Panicln("Ошибка:", res.Error_text)
+		log.Fatalln("Ошибка:", res.Error_text)
 	}
 	if res.Answer.Status == "error" {
 		for i, v := range res.Answer.Errors {
 			log.Println("Ошибка:", i, v.Error_text)
 		}
-		log.Panicln("Выход с ошибкой")
+		log.Fatalln("Выход с ошибкой")
 	}
 	// log.Printf("\n%+v", res.Answer.Result)
 	// for i, v := range res.Answer.Result {

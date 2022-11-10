@@ -9,7 +9,7 @@ const (
 	SubDomain
 )
 
-const ACME_SUB_DOMEN = "_acme-challenge." // точка мы используем для вырезания потом"
+const ACME_SUB_DOMEN = "_acme-challenge" // точка мы используем для вырезания потом"
 
 type SetupDns struct {
 	NameSubDomain     string
@@ -21,6 +21,7 @@ type SetupDns struct {
 	UserPasswdDns     string
 	CertBotDomain     string
 	CertBotValidation string
+	TimePropagation   int64
 }
 
 type ResultData struct {

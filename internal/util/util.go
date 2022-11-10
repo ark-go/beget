@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/fatih/color"
 	"github.com/joho/godotenv"
 )
 
@@ -23,7 +22,7 @@ func loadEnvFile() string {
 	if err := godotenv.Load(pathEnv); err != nil {
 		log.Print("Не найден .env файл")
 	}
-	color.Green("Путь к .env: %s", pathEnv)
+	//	color.Green("Путь к .env: %s", pathEnv)
 	return ""
 }
 

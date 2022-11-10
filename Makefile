@@ -29,8 +29,7 @@ buildandroid:
 
 run: buildlinux buildwin 
 	$(info +Запуск)
-	./bin/main/$(PROJECTNAME) --name "Привет из комндной строки" 
-
+	./bin/main/$(PROJECTNAME) 
 
 build: buildlinux buildwin run #buildwasm buildandroid
 	$(info +Завершен makefile)

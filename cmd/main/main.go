@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/ark-go/beget/internal"
 	"github.com/ark-go/beget/internal/iface"
@@ -26,6 +28,12 @@ const (
 
 func main() {
 	setupDns := &iface.SetupDns{}
+	tm, err := strconv.ParseInt(os.Getenv("TimePropagation"), 10, 64)
+	if err != nil {
+		log.Fatalln("TimePropagation не является числом")
+	}
+
+	setupDns.TimePropagation = tm
 	setupDns.UserLoginDns = os.Getenv("UserLoginDns")
 	setupDns.UserPasswdDns = os.Getenv("UserPasswdDns")
 	setupDns.CertBotDomain = os.Getenv("CERTBOT_DOMAIN")         // Сertbot запросил домен или вставим свой
@@ -37,21 +45,42 @@ func main() {
 	flag.BoolVar(&setupDns.Clear, "clear", false, "Команда clear, используется  Certbot!")
 	flag.BoolVar(&setupDns.AddAcme, "addAcme", false, "Показать текущие домены, и добавить поддомен "+iface.ACME_SUB_DOMEN)
 	flag.Usage = func() {
-		fmt.Println("\nПредназначено для Certbot")
+		fmt.Println("\nОсновное назначение для Certbot, запись DNS записей TXT для получения wildcard SSL сертификата.")
+		fmt.Println("")
 		flag.PrintDefaults()
+		fmt.Println(internal.Help())
 	}
 	flag.Parse()
+
 	if setupDns.Clear && setupDns.Save {
 		log.Fatal("Нельзя указать оба параметра -save и -clear")
 	}
-	log.Println("Привет:", setupDns.NameSubDomain, setupDns.UserLoginDns, setupDns.UserPasswdDns, setupDns.Save, setupDns.Clear)
+	Cert := setupDns.Clear || setupDns.Save
+	if Cert && (setupDns.NameSubDomain != iface.ACME_SUB_DOMEN || setupDns.IPvalue != "" || setupDns.AddAcme) {
+		log.Fatal("С параметрами save и clear, нельзя использовать другие.")
+	}
+
+	if strings.TrimSpace(setupDns.IPvalue) != "" && (setupDns.NameSubDomain == iface.ACME_SUB_DOMEN) {
+		log.Fatal("Нельзя указать ip без указания subdomain")
+	}
+
+	if !Cert {
+		log.Println("Время ожидания распространения DNS: ", tm, "сек.")
+	}
+	//log.Println("Привет:", setupDns.NameSubDomain, setupDns.UserLoginDns, setupDns.UserPasswdDns, setupDns.Save, setupDns.Clear)
 
 	if setupDns.AddAcme {
 		// log.Println("Текущие домены/поддомены:")
 		listDom := internal.GetListDomain(setupDns)
-		listDom.SelectDomain()
+		Dmn, err := listDom.SelectDomain()
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		//setupDns.CertBotDomain = Dmn.Name
+		internal.AddSubDomen(setupDns, Dmn)
+		return
 	}
-	if setupDns.Save || setupDns.Clear {
+	if Cert { // если команда Certbot или
 		internal.ToogleCertBotCode(setupDns)
 	}
 

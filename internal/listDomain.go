@@ -60,7 +60,7 @@ func (ld ListDomain) SelectDomain() (infoDomain *ListDomainId, err error) {
 		s, _ := reader.ReadString('\n')                              // ждем ввод
 		s = strings.TrimSpace(s)                                     // обрезаем ентер
 		if len(s) == 0 {
-			break
+			return nil, errors.New("Пользователь отказался")
 		}
 		intS, err := strconv.ParseInt(s, 10, 64) // переводим проверяем в число
 
@@ -85,6 +85,7 @@ func (ld ListDomain) SelectDomain() (infoDomain *ListDomainId, err error) {
 				//return nil, errors.New("Уже есть поддодмен _acme_challenge")
 			}
 			log.Println("нашли:", d)
+			//cert
 			return d, nil
 		} else {
 			log.Println("в списке нет такого номера", intS)
@@ -92,5 +93,5 @@ func (ld ListDomain) SelectDomain() (infoDomain *ListDomainId, err error) {
 			//return nil, errors.New("не найден домен по этому номеру")
 		}
 	}
-	return nil, errors.New("ошибка 243")
+	// return nil, errors.New("ошибка 243")
 }
