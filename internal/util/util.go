@@ -17,7 +17,7 @@ func loadEnvFile() string {
 		log.Println(err)
 	}
 
-	pathEnv := filepath.Join(path, "..", ".env")
+	pathEnv := filepath.Join(path, "..", "beget.cfg")
 
 	if err := godotenv.Load(pathEnv); err != nil {
 		log.Print("Не найден .env файл")
